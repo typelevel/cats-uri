@@ -1,4 +1,3 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import cats.uri.sbt.{Versions => V}
 
 val Scala212 = "2.12.15"
@@ -7,13 +6,10 @@ val Scala3 = "3.0.2"
 
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
 ThisBuild / scalaVersion := Scala213
+ThisBuild / tlBaseVersion := "0.0"
 
 // Projects
-lazy val `cats-uri` = project
-  .in(file("."))
-  .disablePlugins(MimaPlugin)
-  .enablePlugins(NoPublishPlugin)
-  .aggregate(core.jvm, core.js)
+lazy val root = tlCrossRootProject.aggregate(core)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -28,4 +24,4 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
 
-lazy val site = project.in(file("site")).disablePlugins(MimaPlugin).dependsOn(core.jvm)
+lazy val site = project.in(file("site")).enablePlugins(TypelevelSitePlugin).dependsOn(core.jvm)
