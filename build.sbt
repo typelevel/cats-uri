@@ -145,10 +145,10 @@ lazy val benchmarks = project
   .settings(
     libraryDependencies ++= List(
       "com.google.guava" % "guava"       % V.guavaV,
-      "org.http4s"       %% "http4s-core" % V.http4sV,
-      "org.scalacheck"   %% "scalacheck"  % V.scalacheckV,
-      "org.typelevel"    %% "cats-core"   % V.catsV,
-      "org.typelevel"    %% "cats-kernel" % V.catsV
+      "org.http4s"      %% "http4s-core" % V.http4sV,
+      "org.scalacheck"  %% "scalacheck"  % V.scalacheckV,
+      "org.typelevel"   %% "cats-core"   % V.catsV,
+      "org.typelevel"   %% "cats-kernel" % V.catsV
     ),
     console / initialCommands := {
       List(
