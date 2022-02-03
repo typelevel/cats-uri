@@ -2,7 +2,7 @@ import cats.uri.sbt.{Versions => V}
 
 val Scala212 = "2.12.15"
 val Scala213 = "2.13.8"
-val Scala3   = "3.0.2"
+val Scala3   = "3.1.1"
 
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
 ThisBuild / scalaVersion       := Scala213
@@ -23,15 +23,6 @@ ThisBuild / wildcardImport := {
 // Projects
 
 lazy val root = tlCrossRootProject
-  .settings(
-    inThisBuild(
-      List(
-        scalafixScalaBinaryVersion := scalaBinaryVersion.value,
-        semanticdbEnabled          := true,
-        semanticdbVersion          := scalafixSemanticdb.revision
-      )
-    )
-  )
   .aggregate(
     benchmarks,
     core,
@@ -154,8 +145,10 @@ lazy val benchmarks = project
   .settings(
     libraryDependencies ++= List(
       "com.google.guava" % "guava"       % V.guavaV,
-      "org.scalacheck" %%% "scalacheck"  % V.scalacheckV,
-      "org.http4s"     %%% "http4s-core" % V.http4sV
+      "org.http4s"       %% "http4s-core" % V.http4sV,
+      "org.scalacheck"   %% "scalacheck"  % V.scalacheckV,
+      "org.typelevel"    %% "cats-core"   % V.catsV,
+      "org.typelevel"    %% "cats-kernel" % V.catsV
     ),
     console / initialCommands := {
       List(
