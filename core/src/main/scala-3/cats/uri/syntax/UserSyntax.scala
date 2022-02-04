@@ -42,15 +42,15 @@ private object UserSyntax {
           .fromString(value)
           .fold(
             e => {
-              quotes.reflect.report.errorAndAbort(e)
+              quotes.reflect.report.throwError(e)
               // quotes.reflect.report.error(e)
             },
             _ => '{ User.unsafeFromString(${ Expr(value) }) }
           )
       case Some(_) =>
-        quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
+        quotes.reflect.report.throwError("StringContext must be a single string literal")
       case None =>
-        quotes.reflect.report.errorAndAbort("StringContext args must be statically known")
+        quotes.reflect.report.throwError("StringContext args must be statically known")
     }
 
   inline def userLiteral(inline sc: StringContext, inline args: Any*): User =
@@ -65,14 +65,14 @@ private object UserSyntax {
           .fromPercentEncodedString(value)
           .fold(
             e => {
-              quotes.reflect.report.errorAndAbort(e.sanitizedMessage)
+              quotes.reflect.report.throwError(e.sanitizedMessage)
             },
             _ => '{ User.unsafeFromPercentEncodedString(${ Expr(value) }) }
           )
       case Some(_) =>
-        quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
+        quotes.reflect.report.throwError("StringContext must be a single string literal")
       case None =>
-        quotes.reflect.report.errorAndAbort("StringContext args must be statically known")
+        quotes.reflect.report.throwError("StringContext args must be statically known")
     }
 
   inline def userEncodedLiteral(inline sc: StringContext, inline args: Any*): User =

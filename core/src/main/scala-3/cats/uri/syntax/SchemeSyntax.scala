@@ -38,14 +38,14 @@ private object SchemeSyntax {
           .fromString(value)
           .fold(
             e => {
-              quotes.reflect.report.errorAndAbort(e)
+              quotes.reflect.report.throwError(e)
             },
             _ => '{ Scheme.unsafeFromString(${ Expr(value) }) }
           )
       case Some(_) =>
-        quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
+        quotes.reflect.report.throwError("StringContext must be a single string literal")
       case None =>
-        quotes.reflect.report.errorAndAbort("StringContext args must be statically known")
+        quotes.reflect.report.throwError("StringContext args must be statically known")
     }
 
   inline def literal(inline sc: StringContext, inline args: Any*): Scheme =

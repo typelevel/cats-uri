@@ -1,12 +1,14 @@
 import cats.uri.sbt.{Versions => V}
+import scala.collection.immutable.SortedSet
 
 val Scala212 = "2.12.15"
 val Scala213 = "2.13.8"
-val Scala3   = "3.1.1"
+val Scala3   = "3.0.2"
 
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
-ThisBuild / scalaVersion       := Scala213
-ThisBuild / tlBaseVersion      := "0.0"
+lazy val supportedScalaVersions: SortedSet[String] = SortedSet(Scala212, Scala213, Scala3)
+
+ThisBuild / scalaVersion  := Scala213
+ThisBuild / tlBaseVersion := "0.0"
 
 // Utility
 
@@ -20,21 +22,29 @@ ThisBuild / wildcardImport := {
   }
 }
 
+// Common Settings
+//
+// We don't use these on every module, but most.
+
+lazy val commonSettings = Seq(
+  crossScalaVersions := supportedScalaVersions.toSeq
+)
+
 // Projects
 
 lazy val root = tlCrossRootProject
   .aggregate(
-    benchmarks,
     core,
     laws,
     scalacheck,
     testing
   )
-  .settings(name := "cats-uri")
+  .settings(name := "cats-uri", crossScalaVersions := List(Scala213))
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
+  .settings(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "case-insensitive" % V.caseInsensitiveV,
@@ -64,6 +74,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
 lazy val laws = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("laws"))
+  .settings(commonSettings)
   .settings(
     libraryDependencies ++= List(
       "org.typelevel" %%% "discipline-core" % V.disciplineV
@@ -86,6 +97,7 @@ lazy val laws = crossProject(JVMPlatform, JSPlatform)
 lazy val scalacheck = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("scalacheck"))
+  .settings(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalacheck" %%% "scalacheck" % V.scalacheckV
@@ -110,6 +122,7 @@ lazy val scalacheck = crossProject(JVMPlatform, JSPlatform)
 
 lazy val testing = crossProject(JVMPlatform, JSPlatform)
   .in(file("testing"))
+  .settings(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalameta" %%% "munit-scalacheck" % V.munitV,
@@ -159,7 +172,10 @@ lazy val benchmarks = project
         "org.scalacheck."
       ).map(value => s"import ${value}${wildcardImport.value}").mkString("\n")
     },
-    consoleQuick / initialCommands := ""
+    consoleQuick / initialCommands := "",
+    // http4s forces us to us 3.1.x here.
+    scalaVersion       := Scala213,
+    crossScalaVersions := ((supportedScalaVersions - Scala3) + "3.1.1").toSeq
   )
   .dependsOn(core.jvm)
   .enablePlugins(NoPublishPlugin, JmhPlugin)

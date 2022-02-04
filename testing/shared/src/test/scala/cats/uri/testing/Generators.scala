@@ -35,7 +35,7 @@ private[testing] object Generators {
    * sequences and ensure the PercentDecoder handles them properly.
    */
   def byteToPercentHexString(b: Byte): String = {
-    val hi: Int  = b >> 4 & 0x0f
+    val hi: Int = b >> 4 & 0x0f
     val low: Int = b & 0x0f
 
     def intToHexChar(i: Int): Char =
@@ -103,7 +103,7 @@ private[testing] object Generators {
         .foldLeft(Gen.const(Vector.empty[Int])) {
           case (acc, value) =>
             for {
-              acc        <- acc
+              acc <- acc
               caseSwitch <- shuffleCaseCodePointGen(value)
             } yield acc ++ Vector(caseSwitch)
         }
@@ -257,14 +257,14 @@ private[testing] object Generators {
   val genNonHexPercentPrefixString: Gen[String] = {
     val genHexThenNonHex: Gen[String] =
       for {
-        c               <- Gen.hexChar
+        c <- Gen.hexChar
         nonHexCodePoint <- genNonHexCodePointStrings
       } yield s"${c}${nonHexCodePoint}"
 
     val genNonHexThenHex: Gen[String] =
       for {
         nonHexCodePoint <- genNonHexCodePointStrings
-        c               <- Gen.hexChar
+        c <- Gen.hexChar
       } yield s"${nonHexCodePoint}${c}"
 
     val genNonHexThenNonHex: Gen[String] =

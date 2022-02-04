@@ -22,8 +22,8 @@ package object scalacheck {
       with UserScalacheckInstances
       with PasswordScalacheckInstances
       with UserInfoScalacheckInstances
-  object scheme   extends SchemeScalacheckInstances
-  object user     extends UserScalacheckInstances
+  object scheme extends SchemeScalacheckInstances
+  object user extends UserScalacheckInstances
   object password extends PasswordScalacheckInstances
   object userinfo extends UserInfoScalacheckInstances
 }

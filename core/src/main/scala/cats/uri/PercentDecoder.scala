@@ -109,7 +109,7 @@ object PercentDecoder {
    *   URI which refers to a different resource.
    */
   def decode(value: String): Either[DecodingError, String] = {
-    val in: ByteBuffer  = ByteBuffer.wrap(value.getBytes(StandardCharsets.UTF_8))
+    val in: ByteBuffer = ByteBuffer.wrap(value.getBytes(StandardCharsets.UTF_8))
     val out: ByteBuffer = ByteBuffer.allocate(in.remaining())
 
     def hexCharToByte(char: Byte): Int =
@@ -117,7 +117,7 @@ object PercentDecoder {
         case c if c >= '0' && c <= '9' => (c - '0')
         case c if c >= 'A' && c <= 'F' => 10 + (c - 'A')
         case c if c >= 'a' && c <= 'f' => 10 + (c - 'a')
-        case _                         =>
+        case _ =>
           // A sentinel value for error states.
           Int.MaxValue
       }

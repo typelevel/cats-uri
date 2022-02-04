@@ -29,7 +29,7 @@ private[scalacheck] trait UserInfoScalacheckInstances {
   implicit final val arbUserInfo: Arbitrary[UserInfo] = {
     val genOnlyUser: Gen[UserInfo] =
       for {
-        u                 <- Arbitrary.arbitrary[User]
+        u <- Arbitrary.arbitrary[User]
         hasColonDelimiter <- Arbitrary.arbitrary[Boolean]
       } yield UserInfo(u, hasColonDelimiter)
 

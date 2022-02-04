@@ -42,7 +42,7 @@ private[scalacheck] trait SchemeScalacheckInstances {
     Arbitrary(
       Gen.frequency(
         95 -> genCanonicalScheme,
-        5  -> genScheme
+        5 -> genScheme
       )
     )
 

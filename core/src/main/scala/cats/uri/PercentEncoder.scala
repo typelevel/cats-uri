@@ -67,7 +67,7 @@ object PercentEncoder {
    *   which can be considered "percent encoded" if it contains unencoded '%' values.
    */
   def encode(allowedCodePointPredicate: Int => Boolean)(value: String): String = {
-    val len: Int           = value.length
+    val len: Int = value.length
     val buffer: CharBuffer = CharBuffer.allocate(value.length * 12)
 
     @tailrec
@@ -75,7 +75,7 @@ object PercentEncoder {
       if (index >= len) {
         buffer.flip.toString
       } else {
-        val codePoint: Int      = value.codePointAt(index)
+        val codePoint: Int = value.codePointAt(index)
         val indexIncrement: Int = if (codePoint >= 0x10000) 2 else 1
 
         if (allowedCodePointPredicate(codePoint) && codePoint =!= PercentUnicodeCodePoint) {

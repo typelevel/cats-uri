@@ -24,10 +24,10 @@ package object syntax {
       with UserInfoSyntax
       with RenderableSyntax
       with PercentEncoderSyntax
-  object scheme         extends SchemeSyntax
-  object user           extends UserSyntax
-  object password       extends PasswordSyntax
-  object userinfo       extends UserInfoSyntax
-  object renderable     extends RenderableSyntax
+  object scheme extends SchemeSyntax
+  object user extends UserSyntax
+  object password extends PasswordSyntax
+  object userinfo extends UserInfoSyntax
+  object renderable extends RenderableSyntax
   object percentEncoder extends PercentEncoderSyntax
 }
