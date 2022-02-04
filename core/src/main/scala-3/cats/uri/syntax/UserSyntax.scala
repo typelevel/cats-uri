@@ -33,17 +33,20 @@ private[syntax] trait UserSyntax {
 
 private object UserSyntax {
 
-  private def userLiteralExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(using q: Quotes): Expr[User] =
+  private def userLiteralExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(
+      using q: Quotes): Expr[User] =
     sc.value match {
       case Some(sc) if sc.parts.size == 1 =>
         val value: String = sc.parts.head
-        User.fromString(value).fold(
-          e => {
-            quotes.reflect.report.errorAndAbort(e)
-            // quotes.reflect.report.error(e)
-          },
-          _ => '{User.unsafeFromString(${Expr(value)})}
-        )
+        User
+          .fromString(value)
+          .fold(
+            e => {
+              quotes.reflect.report.errorAndAbort(e)
+              // quotes.reflect.report.error(e)
+            },
+            _ => '{ User.unsafeFromString(${ Expr(value) }) }
+          )
       case Some(_) =>
         quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
       case None =>
@@ -51,18 +54,21 @@ private object UserSyntax {
     }
 
   inline def userLiteral(inline sc: StringContext, inline args: Any*): User =
-    ${userLiteralExpr('sc, 'args)}
+    ${ userLiteralExpr('sc, 'args) }
 
-  private def userEncodedExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(using q: Quotes): Expr[User] =
+  private def userEncodedExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(
+      using q: Quotes): Expr[User] =
     sc.value match {
       case Some(sc) if sc.parts.size == 1 =>
         val value: String = sc.parts.head
-        User.fromPercentEncodedString(value).fold(
-          e => {
-            quotes.reflect.report.errorAndAbort(e.sanitizedMessage)
-          },
-          _ => '{User.unsafeFromPercentEncodedString(${Expr(value)})}
-        )
+        User
+          .fromPercentEncodedString(value)
+          .fold(
+            e => {
+              quotes.reflect.report.errorAndAbort(e.sanitizedMessage)
+            },
+            _ => '{ User.unsafeFromPercentEncodedString(${ Expr(value) }) }
+          )
       case Some(_) =>
         quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
       case None =>
@@ -70,5 +76,5 @@ private object UserSyntax {
     }
 
   inline def userEncodedLiteral(inline sc: StringContext, inline args: Any*): User =
-    ${userEncodedExpr('sc, 'args)}
+    ${ userEncodedExpr('sc, 'args) }
 }

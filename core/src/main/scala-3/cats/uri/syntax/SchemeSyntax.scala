@@ -29,16 +29,19 @@ private[syntax] trait SchemeSyntax {
 
 private object SchemeSyntax {
 
-  private def schemeExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(using q: Quotes): Expr[Scheme] =
+  private def schemeExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(
+      using q: Quotes): Expr[Scheme] =
     sc.value match {
       case Some(sc) if sc.parts.size == 1 =>
         val value: String = sc.parts.head
-        Scheme.fromString(value).fold(
-          e => {
-            quotes.reflect.report.errorAndAbort(e)
-          },
-          _ => '{Scheme.unsafeFromString(${Expr(value)})}
-        )
+        Scheme
+          .fromString(value)
+          .fold(
+            e => {
+              quotes.reflect.report.errorAndAbort(e)
+            },
+            _ => '{ Scheme.unsafeFromString(${ Expr(value) }) }
+          )
       case Some(_) =>
         quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
       case None =>
@@ -46,5 +49,5 @@ private object SchemeSyntax {
     }
 
   inline def literal(inline sc: StringContext, inline args: Any*): Scheme =
-    ${schemeExpr('sc, 'args)}
+    ${ schemeExpr('sc, 'args) }
 }

@@ -32,16 +32,19 @@ private[syntax] trait PasswordSyntax {
 
 private object PasswordSyntax {
 
-  private def passwordLiteralExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(using q: Quotes): Expr[Password] =
+  private def passwordLiteralExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(
+      using q: Quotes): Expr[Password] =
     sc.value match {
       case Some(sc) if sc.parts.size == 1 =>
         val value: String = sc.parts.head
-        Password.fromString(value).fold(
-          e => {
-            quotes.reflect.report.errorAndAbort(e)
-          },
-          _ => '{Password.unsafeFromString(${Expr(value)})}
-        )
+        Password
+          .fromString(value)
+          .fold(
+            e => {
+              quotes.reflect.report.errorAndAbort(e)
+            },
+            _ => '{ Password.unsafeFromString(${ Expr(value) }) }
+          )
       case Some(_) =>
         quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
       case None =>
@@ -49,18 +52,21 @@ private object PasswordSyntax {
     }
 
   inline def passwordLiteral(inline sc: StringContext, inline args: Any*): Password =
-    ${passwordLiteralExpr('sc, 'args)}
+    ${ passwordLiteralExpr('sc, 'args) }
 
-  private def passwordEncodedExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(using q: Quotes): Expr[Password] =
+  private def passwordEncodedExpr(sc: Expr[StringContext], args: Expr[Seq[Any]])(
+      using q: Quotes): Expr[Password] =
     sc.value match {
       case Some(sc) if sc.parts.size == 1 =>
         val value: String = sc.parts.head
-        Password.fromPercentEncodedString(value).fold(
-          e => {
-            quotes.reflect.report.errorAndAbort(e.sanitizedMessage)
-          },
-          _ => '{Password.unsafeFromPercentEncodedString(${Expr(value)})}
-        )
+        Password
+          .fromPercentEncodedString(value)
+          .fold(
+            e => {
+              quotes.reflect.report.errorAndAbort(e.sanitizedMessage)
+            },
+            _ => '{ Password.unsafeFromPercentEncodedString(${ Expr(value) }) }
+          )
       case Some(_) =>
         quotes.reflect.report.errorAndAbort("StringContext must be a single string literal")
       case None =>
@@ -68,5 +74,5 @@ private object PasswordSyntax {
     }
 
   inline def passwordEncodedLiteral(inline sc: StringContext, inline args: Any*): Password =
-    ${passwordEncodedExpr('sc, 'args)}
+    ${ passwordEncodedExpr('sc, 'args) }
 }
