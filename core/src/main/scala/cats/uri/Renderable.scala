@@ -25,7 +25,7 @@ package cats.uri
  *
  * @note
  *   This is similar to the cats typeclass `Show`, but in the context of cats-uri, `Show`
- *   instances (and toString) values yield a dbug value, not a rendered URI component. For
+ *   instances (and toString) values yield a debug value, not a rendered URI component. For
  *   example, consider scheme.
  *
  * {{{
