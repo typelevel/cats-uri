@@ -2,10 +2,10 @@ import cats.uri.sbt.{Versions => V}
 
 val Scala212 = "2.12.15"
 val Scala213 = "2.13.8"
-val Scala3   = "3.1.1"
+val Scala3   = "3.0.2"
 
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
 ThisBuild / scalaVersion       := Scala213
+ThisBuild / crossScalaVersions := List(Scala212, Scala213, Scala3)
 ThisBuild / tlBaseVersion      := "0.0"
 
 // Utility
@@ -30,7 +30,7 @@ lazy val root = tlCrossRootProject
     scalacheck,
     testing
   )
-  .settings(name := "cats-uri")
+  .settings(name := "cats-uri", crossScalaVersions := List(Scala213))
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -159,7 +159,13 @@ lazy val benchmarks = project
         "org.scalacheck."
       ).map(value => s"import ${value}${wildcardImport.value}").mkString("\n")
     },
-    consoleQuick / initialCommands := ""
+    consoleQuick / initialCommands := "",
+    // http4s forces us to us 3.1.x here.
+    scalaVersion       := Scala213,
+    crossScalaVersions := List(Scala212, Scala213, "3.1.1"),
+    // For reasons beyond my grasp, sbt recompiles core with 3.1.1 which
+    // yields a set of deprecation warnings which don't exist on 3.0.2
+    tlFatalWarningsInCi := false
   )
   .dependsOn(core.jvm)
   .enablePlugins(NoPublishPlugin, JmhPlugin)

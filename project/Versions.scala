@@ -12,5 +12,5 @@ object Versions {
   val scalacheckV: String      = "1.15.4"
 
   // Used in bencharmking. Can be removed if/when http4s is using cats-uri.
-  val http4sV: String = "0.23.9"
+  val http4sV: String = "0.23.10"
 }
