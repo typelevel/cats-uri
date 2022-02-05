@@ -25,7 +25,7 @@ trait PercentCodecLaws[A] {
   implicit def decoder: PercentDecoder[A]
 
   final def percentCodecRoundTrip(a: A): Prop =
-    decoder.decode(encoder.encode(a)) ?= Right(a)
+    decoder.parseAndDecode(encoder.encode(a)) ?= Right(a)
 }
 
 object PercentCodecLaws {

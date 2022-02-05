@@ -25,20 +25,21 @@ import java.nio.charset.CharsetDecoder
 /**
  * A typeclass for percent decoding values.
  *
- * Unlike percent encoding, the fundamental decoding operation is actually identical for all
- * types. This class exists because many types require some additional validation after
- * decoding. Lacking this class, the ergonomics for decoding are significantly worse.
+ * Unlike percent encoding, the fundamental decoding operation is actually
+ * identical for all types. It merely perform the `String` based decoding
+ * operation, use [[PercentDecoder#decode]]. Because this class goes from
+ * `String` to `A`, it necessarily implies parsing as well as decoding.
  *
  * This class also allows for the definition of percent encoding laws, e.g. that any value
  * encoded, should always decode successfully to the original value.
  */
 trait PercentDecoder[A] extends Serializable { self =>
-  def decode(value: String): Either[DecodingError, A]
+  def parseAndDecode(value: String): Either[DecodingError, A]
 
   final def emap[B](f: A => Either[DecodingError, B]): PercentDecoder[B] =
     new PercentDecoder[B] {
-      override def decode(value: String): Either[DecodingError, B] =
-        self.decode(value).flatMap(f)
+      override def parseAndDecode(value: String): Either[DecodingError, B] =
+        self.parseAndDecode(value).flatMap(f)
     }
 
   final def map[B](f: A => B): PercentDecoder[B] =
@@ -80,21 +81,6 @@ trait PercentDecoder[A] extends Serializable { self =>
  *   [[https://www.unicode.org/faq/utf_bom.html#gen8]]
  */
 object PercentDecoder {
-
-  /**
-   * Create a [[PercentDecoder]] by applying a function to a `String` value which has been
-   * percent decoded. This is a convenience method when you just want to use normal `String`
-   * decoding, but then need to apply some validation to result, e.g. ensure the result is
-   * non-empty.
-   *
-   * Since the percent decoding operation is fundamentally the same for all types (as opposed to
-   * encoding), this is likely the best way to create a [[PercentDecoder]].
-   */
-  def fromDecodedString[A](f: String => Either[DecodingError, A]): PercentDecoder[A] =
-    new PercentDecoder[A] {
-      final override def decode(value: String): Either[DecodingError, A] =
-        PercentDecoder.decode(value).flatMap(decodedString => f(decodedString))
-    }
 
   def apply[A](implicit ev: PercentDecoder[A]): PercentDecoder[A] =
     ev

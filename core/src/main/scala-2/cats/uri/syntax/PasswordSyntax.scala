@@ -44,10 +44,10 @@ private object PasswordSyntax {
     def validate(c: Context)(s: String): Either[String, c.Expr[Password]] = {
       import c.universe._
 
-      Password.fromPercentEncodedString(s) match {
+      Password.parseFromPercentEncodedString(s) match {
         case Left(e) => Left(e.getLocalizedMessage)
         case _ =>
-          Right(c.Expr(q"Password.unsafeFromPercentEncodedString($s)"))
+          Right(c.Expr(q"Password.unsafeParseFromPercentEncodedString($s)"))
       }
     }
 

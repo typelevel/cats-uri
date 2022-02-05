@@ -36,7 +36,7 @@ object PercentCodec {
       override def encode(a: A): String =
         encoder.encode(a)
 
-      override def decode(value: String): Either[DecodingError, A] =
-        decoder.decode(value)
+      override def parseAndDecode(value: String): Either[DecodingError, A] =
+        decoder.parseAndDecode(value)
     }
 }

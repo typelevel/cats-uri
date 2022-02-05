@@ -52,6 +52,10 @@ final class UsersTests extends ScalaCheckSuite {
     )
   }
 
+  test("Percent encoded users which contain illegal characters from the Uri grammar should not decode"){
+    assert(PercentDecoder[User].parseAndDecode("%3A:").isLeft)
+  }
+
   property("All non-empty string values are valid user values") {
     forAllNoShrink(NonEmptyStringGen.genNonEmptyString) { (str: String) =>
       assert(User.fromString(str).isRight)

@@ -31,10 +31,10 @@ private object UserInfoSyntax {
     def validate(c: Context)(s: String): Either[String, c.Expr[UserInfo]] = {
       import c.universe._
 
-      UserInfo.fromPercentEncodedString(s) match {
+      UserInfo.parseFromPercentEncodedString(s) match {
         case Left(e) => Left(e.getLocalizedMessage)
         case _ =>
-          Right(c.Expr(q"UserInfo.unsafeFromPercentEncodedString($s)"))
+          Right(c.Expr(q"UserInfo.unsafeParseFromPercentEncodedString($s)"))
       }
     }
 

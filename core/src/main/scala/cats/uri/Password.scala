@@ -18,6 +18,7 @@ package cats.uri
 
 import cats._
 import cats.syntax.all._
+import cats.uri.parsers._
 import scala.collection.immutable.BitSet
 
 /**
@@ -65,12 +66,21 @@ object Password {
   private val passwordAllowedCodepoints: BitSet =
     Constants.passwordChars.foldMap(c => BitSet(c.toInt))
 
-  implicit val passwordPercentCodec: PercentCodec[Password] =
+  implicit val passwordPercentCodec: PercentCodec[Password] = {
+    val decoder: PercentDecoder[Password] =
+      value => Rfc3986.userinfoPasswordStr.parseAll(value).leftMap(e =>
+        DecodingError("Failed to parse Password.", e.toString)
+      ).flatMap(value =>
+        PercentDecoder.decode(value)
+      ).flatMap(value =>
+        fromString(value).leftMap(DecodingError.sanitizedMessage)
+      )
+
     PercentCodec.from(
-      PercentDecoder.fromDecodedString(value =>
-        fromString(value).leftMap(DecodingError.sanitizedMessage)),
+      decoder,
       _.encode
     )
+  }
 
   implicit val passwordAppendable: Appendable[Password] =
     Appendable.fromRenderableString[Password]
@@ -102,8 +112,8 @@ object Password {
    * Attempt to create a [[Password]] from a percent encoded `String`. [[Password]] values must
    * be non-empty to disambiguate them from `Option[Password]`.
    */
-  def fromPercentEncodedString(value: String): Either[DecodingError, Password] =
-    PercentDecoder[Password].decode(value)
+  def parseFromPercentEncodedString(value: String): Either[DecodingError, Password] =
+    PercentDecoder[Password].parseAndDecode(value)
 
   /**
    * As [[#fromString]], but will throw on invalid `Strings`.
@@ -119,14 +129,14 @@ object Password {
     )
 
   /**
-   * As [[#fromPercentEncodedString]], but will throw on invalid `Strings`.
+   * As [[#parseFromPercentEncodedString]], but will throw on invalid `Strings`.
    *
    * @note
    *   In general, it is recommended that you not use this method outside of test code or the
    *   REPL.
    */
-  def unsafeFromPercentEncodedString(value: String): Password =
-    fromPercentEncodedString(value).fold(
+  def unsafeParseFromPercentEncodedString(value: String): Password =
+    parseFromPercentEncodedString(value).fold(
       e => throw new IllegalArgumentException(e),
       identity
     )

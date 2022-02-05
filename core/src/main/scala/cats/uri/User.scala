@@ -18,6 +18,7 @@ package cats.uri
 
 import cats._
 import cats.syntax.all._
+import cats.uri.parsers._
 import scala.collection.immutable.BitSet
 
 /**
@@ -68,12 +69,21 @@ object User {
   private val userAllowedCodepoints: BitSet =
     Constants.userChars.foldMap(c => BitSet(c.toInt))
 
-  implicit val userPercentCodec: PercentCodec[User] =
+  implicit val userPercentCodec: PercentCodec[User] = {
+    val decoder: PercentDecoder[User] =
+      value => Rfc3986.userinfoUserStr.parseAll(value).leftMap(e =>
+        DecodingError("Failed to parse User.", e.toString)
+      ).flatMap(value =>
+        PercentDecoder.decode(value)
+      ).flatMap(value =>
+        fromString(value).leftMap(DecodingError.sanitizedMessage)
+      )
+
     PercentCodec.from(
-      PercentDecoder.fromDecodedString(value =>
-        fromString(value).leftMap(DecodingError.sanitizedMessage)),
+      decoder,
       _.encode
     )
+  }
 
   implicit val userAppendable: Appendable[User] =
     Appendable.fromRenderableString[User]
@@ -108,8 +118,8 @@ object User {
    * Attempt to create a [[User]] from a percent encoded `String`. [[User]] values must be
    * non-empty to disambiguate them from `Option[User]`.
    */
-  def fromPercentEncodedString(value: String): Either[DecodingError, User] =
-    PercentDecoder[User].decode(value)
+  def parseFromPercentEncodedString(value: String): Either[DecodingError, User] =
+    PercentDecoder[User].parseAndDecode(value)
 
   /**
    * As [[#fromString]], but will throw on invalid `Strings`.
@@ -125,14 +135,14 @@ object User {
     )
 
   /**
-   * As [[#fromPercentEncodedString]], but will throw on invalid `Strings`.
+   * As [[#parseFromPercentEncodedString]], but will throw on invalid `Strings`.
    *
    * @note
    *   In general, it is recommended that you not use this method outside of test code or the
    *   REPL.
    */
-  def unsafeFromPercentEncodedString(value: String): User =
-    fromPercentEncodedString(value).fold(
+  def unsafeParseFromPercentEncodedString(value: String): User =
+    parseFromPercentEncodedString(value).fold(
       e => throw new IllegalArgumentException(e),
       identity
     )

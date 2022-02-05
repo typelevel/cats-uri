@@ -270,17 +270,17 @@ object UserInfo {
    * val res1: cats.uri.UserInfo = UserInfo(user = Some(User(value = user)), password = None, hasColonDelimiter = false)
    * }}}
    */
-  def fromPercentEncodedString(value: String): Either[DecodingError, UserInfo] =
-    PercentDecoder[UserInfo].decode(value)
+  def parseFromPercentEncodedString(value: String): Either[DecodingError, UserInfo] =
+    PercentDecoder[UserInfo].parseAndDecode(value)
 
   /**
-   * As [[#fromPercentEncodedString]], but will throw on invalid values.
+   * As [[#parseFromPercentEncodedString]], but will throw on invalid values.
    *
    * @note
    *   Use of this method is discouraged outside of testing and the REPL.
    */
-  def unsafeFromPercentEncodedString(value: String): UserInfo =
-    fromPercentEncodedString(value).fold(
+  def unsafeParseFromPercentEncodedString(value: String): UserInfo =
+    parseFromPercentEncodedString(value).fold(
       e => throw new IllegalArgumentException(e),
       identity
     )

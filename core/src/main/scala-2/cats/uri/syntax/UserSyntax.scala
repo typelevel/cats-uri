@@ -44,10 +44,10 @@ private object UserSyntax {
     def validate(c: Context)(s: String): Either[String, c.Expr[User]] = {
       import c.universe._
 
-      User.fromPercentEncodedString(s) match {
+      User.parseFromPercentEncodedString(s) match {
         case Left(e) => Left(e.getLocalizedMessage)
         case _ =>
-          Right(c.Expr(q"User.unsafeFromPercentEncodedString($s)"))
+          Right(c.Expr(q"User.unsafeParseFromPercentEncodedString($s)"))
       }
     }
 

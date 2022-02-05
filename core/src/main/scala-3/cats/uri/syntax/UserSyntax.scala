@@ -62,12 +62,12 @@ private object UserSyntax {
       case Some(sc) if sc.parts.size == 1 =>
         val value: String = sc.parts.head
         User
-          .fromPercentEncodedString(value)
+          .parseFromPercentEncodedString(value)
           .fold(
             e => {
               quotes.reflect.report.throwError(e.sanitizedMessage)
             },
-            _ => '{ User.unsafeFromPercentEncodedString(${ Expr(value) }) }
+            _ => '{ User.unsafeParseFromPercentEncodedString(${ Expr(value) }) }
           )
       case Some(_) =>
         quotes.reflect.report.throwError("StringContext must be a single string literal")
