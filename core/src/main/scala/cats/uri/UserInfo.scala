@@ -166,9 +166,14 @@ object UserInfo {
           .flatMap {
             case (user, colon, password)
                 if user.isDefined || colon.isDefined || password.isDefined =>
+
+              // We avoid going through the PercentDecoder[User] here as an
+              // optimization to avoid reparsing the results.
               for {
-                u <- user.traverse(PercentDecoder[User].decode)
-                p <- password.traverse(PercentDecoder[Password].decode)
+                decodedUserString <- user.traverse(PercentDecoder.decode)
+                decodedPasswordString <- password.traverse(PercentDecoder.decode)
+                u <- decodedUserString.traverse(value => User.fromString(value).leftMap(DecodingError.sanitizedMessage))
+                p <- decodedPasswordString.traverse(value => Password.fromString(value).leftMap(DecodingError.sanitizedMessage))
               } yield UserInfoImpl(u, p, colon.isDefined)
             case _ =>
               Left(DecodingError(0, "The empty string is not a valid UserInfo value."))
