@@ -52,7 +52,8 @@ final class PasswordTests extends ScalaCheckSuite {
     )
   }
 
-  test("Percent encoded passwords which contain illegal characters from the Uri grammar should not decode"){
+  test(
+    "Percent encoded passwords which contain illegal characters from the Uri grammar should not decode") {
     assert(PercentDecoder[Password].parseAndDecode("%3A@").isLeft)
   }
 

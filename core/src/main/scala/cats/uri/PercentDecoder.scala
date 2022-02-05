@@ -25,10 +25,10 @@ import java.nio.charset.CharsetDecoder
 /**
  * A typeclass for percent decoding values.
  *
- * Unlike percent encoding, the fundamental decoding operation is actually
- * identical for all types. It merely perform the `String` based decoding
- * operation, use [[PercentDecoder#decode]]. Because this class goes from
- * `String` to `A`, it necessarily implies parsing as well as decoding.
+ * Unlike percent encoding, the fundamental decoding operation is actually identical for all
+ * types. It merely perform the `String` based decoding operation, use
+ * [[PercentDecoder#decode]]. Because this class goes from `String` to `A`, it necessarily
+ * implies parsing as well as decoding.
  *
  * This class also allows for the definition of percent encoding laws, e.g. that any value
  * encoded, should always decode successfully to the original value.

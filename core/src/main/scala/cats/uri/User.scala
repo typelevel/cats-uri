@@ -71,13 +71,13 @@ object User {
 
   implicit val userPercentCodec: PercentCodec[User] = {
     val decoder: PercentDecoder[User] =
-      value => Rfc3986.userinfoUserStr.parseAll(value).leftMap(e =>
-        DecodingError("Failed to parse User.", e.toString)
-      ).flatMap(value =>
-        PercentDecoder.decode(value)
-      ).flatMap(value =>
-        fromString(value).leftMap(DecodingError.sanitizedMessage)
-      )
+      value =>
+        Rfc3986
+          .userinfoUserStr
+          .parseAll(value)
+          .leftMap(e => DecodingError("Failed to parse User.", e.toString))
+          .flatMap(value => PercentDecoder.decode(value))
+          .flatMap(value => fromString(value).leftMap(DecodingError.sanitizedMessage))
 
     PercentCodec.from(
       decoder,

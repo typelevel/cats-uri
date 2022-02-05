@@ -68,13 +68,13 @@ object Password {
 
   implicit val passwordPercentCodec: PercentCodec[Password] = {
     val decoder: PercentDecoder[Password] =
-      value => Rfc3986.userinfoPasswordStr.parseAll(value).leftMap(e =>
-        DecodingError("Failed to parse Password.", e.toString)
-      ).flatMap(value =>
-        PercentDecoder.decode(value)
-      ).flatMap(value =>
-        fromString(value).leftMap(DecodingError.sanitizedMessage)
-      )
+      value =>
+        Rfc3986
+          .userinfoPasswordStr
+          .parseAll(value)
+          .leftMap(e => DecodingError("Failed to parse Password.", e.toString))
+          .flatMap(value => PercentDecoder.decode(value))
+          .flatMap(value => fromString(value).leftMap(DecodingError.sanitizedMessage))
 
     PercentCodec.from(
       decoder,

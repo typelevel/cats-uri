@@ -29,7 +29,9 @@ final class UserInfoTests extends ScalaCheckSuite {
   }
 
   test("The userInfo value ':' should have no user or password, just a delimiter.") {
-    assertEquals(UserInfo.parseFromPercentEncodedString(":"), Right(UserInfo.OnlyColonDelimiter))
+    assertEquals(
+      UserInfo.parseFromPercentEncodedString(":"),
+      Right(UserInfo.OnlyColonDelimiter))
   }
 
   test("The userInfo value \"user%3A:\" should have a user and a delimiter and no password") {
